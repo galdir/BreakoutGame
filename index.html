@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        canvas {
+            background: #eee;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var raio_da_bola = 10;
+        let x_ball = canvas.width / 2;
+        let y_ball = canvas.height - 30;
+        var dx = 2;
+        var dy = -2;
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x_ball, y_ball, raio_da_bola, 0, Math.PI * 2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+
+            if (x_ball + dx > canvas.width - raio_da_bola || x_ball + dx < raio_da_bola) {
+                dx = -dx;
+            }
+            if (y_ball + dy > canvas.height - raio_da_bola || y_ball + dy < raio_da_bola) {
+                dy = -dy;
+            }
+
+            x_ball += dx;
+            y_ball += dy;
+        }
+        setInterval(draw, 10);
+    </script>
+</body>
+
+</html>
