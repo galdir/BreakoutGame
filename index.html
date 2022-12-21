@@ -14,6 +14,9 @@
             background: #eee;
             display: block;
             margin: 0 auto;
+            border-top: 2px solid black;
+            border-left: 2px solid black;
+            border-right: 2px solid black;
         }
     </style>
 </head>
@@ -30,6 +33,10 @@
         let y_ball = canvas.height - 30;
         var dx = 2;
         var dy = -2;
+
+        let score = 0;
+        let lives = 3;
+
 
         // brick variables 
         const brickRowCount = 3;
@@ -58,6 +65,14 @@
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
+        document.addEventListener("mousemove", mouseMoveHandler, false);
+
+        function mouseMoveHandler(e) {
+            const relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }
 
         function keyDownHandler(e) {
             if (e.key === "Right" || e.key === "ArrowRight") {
@@ -93,6 +108,12 @@
             }
         }
 
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
+        }
+
         function collisionDetection() {
             for (let c = 0; c < brickColumnCount; c++) {
                 for (let r = 0; r < brickRowCount; r++) {
@@ -101,10 +122,21 @@
                         if (x_ball > b.x && x_ball < b.x + brickWidth && y_ball > b.y && y_ball < b.y + brickHeight) {
                             dy = -dy;
                             b.status = 0;
+                            score++;
+                            if (score === brickRowCount * brickColumnCount) {
+                                alert("YOU WIN, CONGRATULATIONS!");
+                                document.location.reload();
+                            }
                         }
                     }
                 }
             }
+        }
+
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText(`Score: ${score}`, 8, 20);
         }
 
         function drawBall() {
@@ -124,10 +156,13 @@
         }
 
         function draw() {
+            requestAnimationFrame(draw);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBricks();
             drawBall();
             drawPaddle();
+            drawScore();
+            drawLives();
             collisionDetection();
 
             if (x_ball + dx > canvas.width - ball_radius || x_ball + dx < ball_radius) {
@@ -139,9 +174,17 @@
                 if (x_ball > paddleX && x_ball < paddleX + paddleWidth) {
                     dy = -dy;
                 } else {
-                    alert("GAME OVER");
-                    document.location.reload();
-                    clearInterval(interval);
+                    lives--;
+                    if (!lives) {
+                        alert("GAME OVER");
+                        document.location.reload();
+                    } else {
+                        x = canvas.width / 2;
+                        y = canvas.height - 30;
+                        dx = 2;
+                        dy = -2;
+                        paddleX = (canvas.width - paddleWidth) / 2;
+                    }
                 }
             }
 
@@ -156,7 +199,7 @@
         }
 
 
-        const interval = setInterval(draw, 10);
+        draw();
     </script>
 </body>
 
